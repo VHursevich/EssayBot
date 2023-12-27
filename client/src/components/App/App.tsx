@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useState } from "react";
-import LoginForm from "../LoginFrom/LoginForm";
+import LoginForm from "../LoginForm/LoginForm";
 import { Context } from "../../index";
 import {observer} from "mobx-react-lite"; 
 import Chat from "../Chat/Chat";
@@ -16,7 +16,7 @@ const App: FC = () => {
         if(store.user.username !== undefined){
           store.setAuthStatus(true);
         }
-      }     
+    }     
   }, []);
 
   async function getUsers(){
@@ -55,10 +55,24 @@ const App: FC = () => {
   }
 
   //Основная форма после входа
+  
+  
+
   return( 
-    <div>
+    <div>   
+      <h1>
+       {
+          store.user.date == new Date('2001, 0, 0O5, 0, 0, 0, 0') ?
+              `Токен не был использован`: `Токен был использован ${store.user.date}`       
+       }
+      
+      </h1>
+
+
+      <h1>{`Токен был использован ${store.user.date}`}</h1>
+
       <h1>{`Осталось кредитов: ${store.user.credit}`}</h1>
-        
+      
       <h1 >{`Пользователь ${store.user.username} авторизован`}</h1>
       
       <div>

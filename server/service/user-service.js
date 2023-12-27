@@ -20,7 +20,9 @@ class UserService {
       username,
       password: hashPassword,
       credit: 5,
+      date: new Date('January 1, 1 00:00:00'),
     });
+
     const userDto = new UserDto(user); //хранить _id из базы, что мы будем хранить в токене
 
     const tokens = TokenService.generateTokens({ ...userDto });

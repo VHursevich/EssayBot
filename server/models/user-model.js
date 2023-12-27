@@ -16,12 +16,12 @@ const UserSchema = new Schema({
     type: Number,
     required: true,
   },
-  /*
+  
   date: {
     type: Date,
     required: true,
   },
-
+/*
   tgUsername: {
     type: String,
     required: false,
