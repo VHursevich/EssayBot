@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const UserSchema = new Schema({
-  username: {
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -12,6 +12,10 @@ const UserSchema = new Schema({
     required: true,
   },
 
+  activationLink:{
+    type:String,
+  },
+
   credit: {
     type: Number,
     required: true,
@@ -19,13 +23,15 @@ const UserSchema = new Schema({
   
   date: {
     type: Date,
+    default: new Date(2000, 1, 1, 1, 1, 1),
     required: true,
   },
-/*
-  tgUsername: {
-    type: String,
-    required: false,
-  },*/
+
+  tg:{
+    type:String,
+    required:false,
+    unique:true,
+  }
 });
 
 module.exports = model("User", UserSchema);

@@ -43,7 +43,7 @@
 
   # server
     1)npm init -y (при полной загрузке, если реп в теории не надо)
-    2)npm i express cors cookie-parser
+    2)npm i express cors cookie-parser uuid nodemailer
     3)npm i nodemon --save-dev
     4)npm install dotenv --save
     5)npm install mongodb

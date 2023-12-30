@@ -13,10 +13,10 @@ class UserController {
         );
       }
 
-      const { username, password } = req.body;
+      const { email, password } = req.body;
 
       const userData = await UserService.registrationService(
-        username,
+        email,
         password
       );
 
@@ -34,8 +34,8 @@ class UserController {
   //Логирование
   async login(req, res, next) {
     try {
-      const { username, password } = req.body;
-      const userData = await UserService.login(username, password);
+      const { email, password } = req.body;
+      const userData = await UserService.login(email, password);
 
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -61,7 +61,17 @@ class UserController {
     }
   }
 
-  //
+  async activate(req, res, next){
+    try{
+        const activationLink = req.params.link;
+        await UserService.activate(activationLink);
+        return res.redirect(process.env.CLIENT_URL);
+    }catch(e){
+      next(e);
+    }
+  }
+
+  //refresh токенов
   async refresh(req, res, next) {
     try {
       const { refreshToken } = req.cookies;

@@ -3,26 +3,29 @@ const bcrypt = require("bcryptjs");
 const TokenService = require("./token-service");
 const UserDto = require("../dtos/user-dto");
 const ApiError = require("../exceptions/api-error");
+const uuid = require("uuid")
+const MailService = require("./mail-service")
 
 class UserService {
-  async registrationService(username, password) {
-    const candidate = await UserModel.findOne({ username });
+  async registrationService(email, password) {
+    const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
       throw ApiError.BadRequest(
-        `Пользователь с именем ${username} уже существует`
+        `Пользователь с почтовым адресом ${email} уже существует`
       );
     }
 
     const hashPassword = await bcrypt.hash(password, 3);
-
+    const activationLink = uuid.v4();
     const user = await UserModel.create({
-      username,
+      email,
       password: hashPassword,
       credit: 5,
-      date: new Date('January 1, 1 00:00:00'),
+      activationLink,
     });
 
+    await MailService.sendActivationMail(email, `${process.env.process.API_URL}/api/activate/${activationLink}`);
     const userDto = new UserDto(user); //хранить _id из базы, что мы будем хранить в токене
 
     const tokens = TokenService.generateTokens({ ...userDto });
@@ -32,8 +35,8 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  async login(username, password) {
-    const user = await UserModel.findOne({ username });
+  async login(email, password) {
+    const user = await UserModel.findOne({ email });
     if (!user) {
       throw ApiError.BadRequest("Пользователь с таким логином не найден");
     }
@@ -52,6 +55,15 @@ class UserService {
   async logout(refreshToken) {
     const token = await TokenService.removeToken(refreshToken);
     return token;
+  }
+
+  async activate(activationLink){
+    const user = await UserModel.findOne({activationLink});
+    if(!user){
+      throw new Error('Неккоректная ссылка активации');
+    }
+    user.date = new Date();
+    await user.save();
   }
 
   async refresh(refreshToken) {
@@ -80,13 +92,14 @@ class UserService {
     return users;
   }
 
-  async useToken(username){
-    const UserDto = await UserModel.findOne({username});
+  //ОПТИМИЗИРОВАТЬ КАК СНЯТИЕ ОПРЕДЕЛЁННОГО КОЛИЧЕСТВА ТОКЕНОВ
+  async useToken(email){
+    const UserDto = await UserModel.findOne({email});
     const {credit} = UserDto;
     if(credit == 0){
       throw ApiError.CreditsShortageError();
     }
-    const credits = await UserModel.findOneAndUpdate({username}, {credit: credit - 1}, { new:true }); //new для возращения обноваленного документа
+    const credits = await UserModel.findOneAndUpdate({email}, {credit: credit - 1}, { new:true }); //new для возращения обноваленного документа
     console.log(credits);
     return credits.credit;
   }
