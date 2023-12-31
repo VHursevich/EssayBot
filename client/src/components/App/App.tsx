@@ -5,7 +5,8 @@ import {observer} from "mobx-react-lite";
 import Chat from "../Chat/Chat";
 import UserService from "../../services/UserServices";
 import { IUser } from "../../models/IUser";
-  
+import Header from '../Header/Header';
+
 const App: FC = () => {
   const {store} = useContext(Context);
   const [users, setUsers] = useState<IUser[]>([]);
@@ -87,6 +88,7 @@ const App: FC = () => {
 
 
       <button onClick={() => store.logout()}>Выйти</button>
+      <Header/>
       <Chat/>
     </div>
   ); 

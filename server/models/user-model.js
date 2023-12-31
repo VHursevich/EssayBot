@@ -26,7 +26,7 @@ const UserSchema = new Schema({
     default: new Date(2000, 1, 1, 1, 1, 1),
     required: true,
   },
-
+  
   tg:{
     type:String,
     required:false,
